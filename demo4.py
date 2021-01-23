@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 
 app = Flask(__name__)
+app.secret_key = "bahehgbshieorbgjsrntugsu;riohubdlr;jguhjdprth"
 
 book = {
     "name": "斗破苍穹",
@@ -30,22 +31,15 @@ users = [
         "password": "123456"
     }
 ]
-currentuser = None
-
 
 @app.route("/")
 def index():
-    global currentuser
-    user = currentuser
-    print(user, "-------")
     articles = book["articles"]
     return render_template("index.html", **locals())
 
 
 @app.route("/<int:pk>")
 def detail(pk):
-    global currentuser
-    user = currentuser
     article = None
     for a in book["articles"]:
         if a["id"] == pk:
@@ -55,7 +49,6 @@ def detail(pk):
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    global currentuser
     if request.method == "GET":
         return render_template("login.html", **locals())
     elif request.method == "POST":
@@ -64,18 +57,15 @@ def login():
         password = request.form.get("password")
         for u in users:
             if u["email"] == email and u["password"] == password:
-                currentuser = u
-                print(currentuser, "====")
+                session["user"] = email
                 return redirect(url_for("index"))
-        print("登录失败")
+        flash("用户名或者密码错误")
         return redirect(url_for("login"))
 
 
 @app.route("/logout")
 def logout():
-    global currentuser
-    currentuser = None
-    user = currentuser
+    session.pop("user")
     return redirect(url_for("index"))
 
 
@@ -87,12 +77,18 @@ def regist():
         email = request.form.get("email")
         password = request.form.get("password")
         password2 = request.form.get("password2")
-        global users
+        for u in users:
+            if u["email"] == email:
+                flash("邮箱已经注册")
+                return redirect(url_for('regist'))
+        if password != password2:
+            flash("密码不一致")
+            return redirect(url_for('regist'))
+
         users.append({
             "email": email,
             "password": password
         })
-        print("当前用户有", users)
         return redirect(url_for('login'))
 
 

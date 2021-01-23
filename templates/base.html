@@ -31,7 +31,7 @@
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
 			<a class="navbar-brand" href="#">
-				<img src="{{ url_for('static', filename='img/default.jpg') }}" alt="">
+				<img src="{{ url_for('static', filename='img/default.png') }}" alt="">
 			</a>
 		</div>
 
@@ -41,12 +41,12 @@
 				<li class="active"><a href="/">首页 <span class="sr-only">(current)</span></a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				{% if user %}
-					<li><a href="#">{{ user["email"] }}</a></li>
-					<li><a href="{{ url_for('logout') }}">退出</a></li>
+				{% if 'user' in session %}
+					<li><a href="#">{{ session["user"] }}</a></li>
+					<li><a href="{{ url_for('user.logout') }}">退出</a></li>
 				{% else %}
-					<li><a href="{{ url_for('regist') }}">注册</a></li>
-					<li><a href="{{ url_for('login') }}">登录</a></li>
+					<li><a href="{{ url_for('user.regist') }}">注册</a></li>
+					<li><a href="{{ url_for('user.login') }}">登录</a></li>
 				{% endif %}
 			</ul>
 		</div><!-- /.navbar-collapse -->
